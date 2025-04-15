@@ -1,0 +1,108 @@
+<?php
+$bandara_asal = [
+    "Soekarno Hatta" => 65000,
+    "Husein Sastranegara" => 50000,
+    "Abdul Rachman Saleh" => 40000,
+    "Juanda" => 30000
+];
+
+$bandara_tujuan = [
+    "Ngurah Rai" => 85000,
+    "Hasanuddin" => 70000,
+    "Inanwatan" => 90000,
+    "Sultan Iskandar Muda" => 60000
+];
+
+ksort($bandara_asal);
+ksort($bandara_tujuan);
+
+function formatRupiah($angka) {
+    return "Rp. " . number_format($angka, 0, ',', '.');
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $maskapai = $_POST['maskapai'];
+    $asal = $_POST['asal'];
+    $tujuan = $_POST['tujuan'];
+    $harga_tiket = (int)$_POST['harga'];
+
+    $pajak_asal = $bandara_asal[$asal];
+    $pajak_tujuan = $bandara_tujuan[$tujuan];
+    $total_pajak = $pajak_asal + $pajak_tujuan;
+
+    $total_harga = $harga_tiket + $total_pajak;
+    $tanggal = date("Y-m-d");
+    $nomor = rand(100000000, 999999999);
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pendaftaran Rute Penerbangan</title>
+    <style>
+        label {display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold}
+        input, select {padding: 5px; width: 400px; box-sizing: border-box}
+        table {margin-top: 20px; border-collapse: collapse; width: 80%; }
+        th, td {border: 1px solid #ccc; padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+    <h2>Pendaftaran Rute Penerbangan</h2>
+
+    <form method="POST">
+        <label>Nama Maskapai</label>
+        <input type="text" name="maskapai" required>
+
+        <label>Bandara Asal</label>
+        <select name="asal" required>
+            <option value="">Pilih Bandara Asal</option>
+            <?php foreach ($bandara_asal as $nama => $pajak): ?>
+                <option value="<?= $nama ?>"><?= $nama ?></option>
+            <?php endforeach; ?>
+        </select>
+
+        <label>Bandara Tujuan</label>
+        <select name="tujuan" required>
+            <option value="">Pilih Bandara Tujuan</option>
+            <?php foreach ($bandara_tujuan as $nama => $pajak): ?>
+                <option value="<?= $nama ?>"><?= $nama ?></option>
+            <?php endforeach; ?>
+        </select>
+
+        <label>Harga Tiket</label>
+        <input type="number" name="harga" required>
+
+        <br><br>
+        <button type="submit">Daftarkan Penerbangan</button>
+    </form>
+
+
+    <?php if ($_SERVER['REQUEST_METHOD'] == 'POST'): ?>
+        <h3>Rute Penerbangan</h3>
+        <table>
+            <tr>
+                <th>Nomor</th>
+                <th>Tanggal</th>
+                <th>Maskapai</th>
+                <th>Asal</th>
+                <th>Tujuan</th>
+                <th>Harga Tiket</th>
+                <th>Pajak</th>
+                <th>Total Harga</th>
+            </tr>
+            <tr>
+                <td><?= $nomor ?></td>
+                <td><?= $tanggal ?></td>
+                <td><?= htmlspecialchars($maskapai) ?></td>
+                <td><?= $asal ?></td>
+                <td><?= $tujuan ?></td>
+                <td><?= formatRupiah($harga_tiket) ?></td>
+                <td><?= formatRupiah($total_pajak) ?></td>
+                <td><?= formatRupiah($total_harga) ?></td>
+            </tr>
+        </table>
+    <?php endif; ?>
+
+</body>
+</html>
